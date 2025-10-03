@@ -1,10 +1,10 @@
 services:
-  fastapi_skeleton:
+  svg_builder:
     build:
       context: .
       dockerfile: Dockerfile
-    image: thet4/fastapi_skeleton:dev
-    container_name: fastapi_skeleton
+    image: thet4/svg_builder:dev
+    container_name: svg_builder
     environment:
       - ROLE=default
     ports:
