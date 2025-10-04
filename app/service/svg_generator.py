@@ -19,7 +19,7 @@ class SvgGeneratorService:
         groups: tuple[str, ...] = (
             BackgroundSvgGroup.build_group(width, height, "white"),
             PolygonSvgGroup(
-                angles_count=5, radius=height / 2, thickness=1.5, circle_visible=False, offset_x=width / 6, offset_y=0,
+                angles_count=7, radius=height / 2, thickness=5, circle_visible=False, offset_x=width / 6, offset_y=0,
                 rgb=(0, 0, 50), progressive_color=True
             ).build()
         )

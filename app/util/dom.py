@@ -19,3 +19,10 @@ class DomUtil:
     @staticmethod
     def build_element(tag: str, attributes: dict[str, str]) -> str:
         return f"<{tag} {DomUtil.build_attributes_from_dict(attributes)}/>"
+
+    @staticmethod
+    def wrap_with_auto_reload_html(dom_content: str, reload_delay_s: int) -> str:
+        return (f"<html>"
+                f"<head><meta http-equiv='refresh' content='{reload_delay_s}' /></head>"
+                f"{dom_content}"
+                f"</html>")
