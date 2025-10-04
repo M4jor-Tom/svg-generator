@@ -1,4 +1,4 @@
-from .svg_group import SvgGroup
-from .background_svg_group import BackgroundSvgGroup
-from .circle_pulsar_svg_group import CirclePulsarSvgGroup
+from .svg_element import SvgElement
+from .background_svg_element import BackgroundSvgElement
+from .circle_pulsar_svg_element import CirclePulsarSvgElement
 from .polygon_svg_group import PolygonSvgGroup

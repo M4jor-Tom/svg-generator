@@ -2,11 +2,11 @@ from math import cos, sin, tau
 
 from pydantic import BaseModel
 
-from model.domain import SvgGroup
+from model.domain import SvgElement
 from util import DomUtil
 
 
-class PolygonSvgGroup(BaseModel, SvgGroup):
+class PolygonSvgGroup(BaseModel, SvgElement):
     angles_count: int
     radius: float
     thickness: float
@@ -14,16 +14,16 @@ class PolygonSvgGroup(BaseModel, SvgGroup):
     progressive_color: bool
     cx: float
     cy: float
+    pulse: bool
 
-    @staticmethod
-    def build_polygon_pulse_animation(radius: float) -> str:
+    def build_polygon_pulse_animation(self, duration_s: float) -> str:
         return DomUtil.build_element("animateTransform", {
             "attributeName": "transform",
             "type": "rotate",
             "fill": "freeze",
-            "dur": "1s",
-            "values": f"{radius};0;{radius};0;{radius};0",
-            "keyTimes": "0;0.3333;0.3333;0.6667;0.6667;1"
+            "dur": f"{duration_s}s",
+            "from": f"0 {self.cx} {self.cy}",
+            "to": f"{360} {self.cx} {self.cy}"
         })
 
     @staticmethod
@@ -74,6 +74,9 @@ class PolygonSvgGroup(BaseModel, SvgGroup):
 
     def build(self) -> str:
         elements: list[str] = []
+
+        if self.pulse:
+            elements.append(self.build_polygon_pulse_animation(duration_s=1))
 
         angles: list[tuple[float, float]] = PolygonSvgGroup.build_angles(
             angles_count=self.angles_count, cx=self.cx, cy=self.cy, radius=self.radius)

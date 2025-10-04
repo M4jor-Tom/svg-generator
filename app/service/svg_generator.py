@@ -1,6 +1,6 @@
 from xml.dom.minidom import Document
 
-from model.domain import PolygonSvgGroup, BackgroundSvgGroup, CirclePulsarSvgGroup
+from model.domain import PolygonSvgGroup, BackgroundSvgElement, CirclePulsarSvgElement
 from xml.dom import minidom
 
 from util import DomUtil
@@ -22,17 +22,21 @@ class SvgGeneratorService:
         polygon_radius: float = height / 2
         cx: float = height / 2
         cy: float = height / 2
+        background: BackgroundSvgElement = BackgroundSvgElement(width=width, height=height, color="white")
+        circle_pulsar: CirclePulsarSvgElement = CirclePulsarSvgElement(
+            radius=circle_radius, pulses_count=3,
+            fill_rgb=(255, 255, 255), stroke_rgb=(0, 0, 127),
+            cx=cx, cy=cy, thickness=3
+        )
+        polygon_svg_group: PolygonSvgGroup = PolygonSvgGroup(
+            angles_count=7, radius=polygon_radius, thickness=5,
+            rgb=(0, 0, 50), progressive_color=True, cx=cx, cy=cy,
+            pulse=False
+        )
         groups: tuple[str, ...] = (
-            BackgroundSvgGroup.build_group(width, height, "white"),
-            CirclePulsarSvgGroup(
-                radius=circle_radius,
-                fill_rgb=(255, 255, 255), stroke_rgb=(0, 0, 127),
-                cx=cx, cy=cy, thickness=3
-            ).build(),
-            PolygonSvgGroup(
-                angles_count=7, radius=polygon_radius, thickness=5,
-                rgb=(0, 0, 50), progressive_color=True, cx=cx, cy=cy
-            ).build()
+            background.build(),
+            circle_pulsar.build(),
+            polygon_svg_group.build()
         )
         groups_with_offset: str = DomUtil.build_element(
             "g", {"transform": f"translate({width / 6}, {0})"}, ''.join(groups))

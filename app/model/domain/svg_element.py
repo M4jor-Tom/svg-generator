@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class SvgGroup(ABC):
+class SvgElement(ABC):
     @abstractmethod
     def build(self) -> str:
         pass
