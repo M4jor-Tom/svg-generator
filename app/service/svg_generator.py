@@ -18,10 +18,10 @@ class SvgGeneratorService:
     def get_svg(width: float, height: float, indent: bool) -> str:
         groups: tuple[str, ...] = (
             BackgroundSvgGroup.build_group(width, height, "white"),
-            PolygonSvgGroup.build_group(
+            PolygonSvgGroup(
                 angles_count=5, radius=height / 2, thickness=1.5, circle_visible=False, offset_x=width / 6, offset_y=0,
                 rgb=(0, 0, 50), progressive_color=True
-            )
+            ).build()
         )
         unindented_svg: str = (
             f"<svg xmlns='http://www.w3.org/2000/svg' "

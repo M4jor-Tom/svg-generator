@@ -2,10 +2,19 @@ from math import cos, sin, tau
 
 from pydantic import BaseModel
 
+from model.domain import SvgGroup
 from util import DomUtil
 
 
-class PolygonSvgGroup(BaseModel):
+class PolygonSvgGroup(BaseModel, SvgGroup):
+    angles_count: int
+    radius: float
+    thickness: float
+    circle_visible: bool
+    rgb: tuple[int, int, int]
+    progressive_color: bool
+    offset_x: float
+    offset_y: float
 
     @staticmethod
     def build_circle(cx: float, cy: float, radius: float, thickness: float, color: str) -> str:
@@ -59,29 +68,21 @@ class PolygonSvgGroup(BaseModel):
         return DomUtil.build_str_color(
             tuple[float, float, float]([color + rgb_offset for color in initial_rgb]))
 
-    @staticmethod
-    def build_group(
-            angles_count: int,
-            radius: float,
-            thickness: float,
-            circle_visible: bool,
-            rgb: tuple[int, int, int],
-            progressive_color: bool,
-            offset_x: float,
-            offset_y: float
-    ) -> str:
+    def build(self) -> str:
         elements: list[str] = []
-        cx: float = radius
-        cy: float = radius
+        cx: float = self.radius
+        cy: float = self.radius
         color: str = "white"
 
-        if circle_visible:
-            elements.append(PolygonSvgGroup.build_circle(cx=cx, cy=cy, radius=radius, color=color, thickness=thickness))
+        if self.circle_visible:
+            elements.append(PolygonSvgGroup.build_circle(
+                cx=cx, cy=cy, radius=self.radius, color=color, thickness=self.thickness))
 
-        angles: list[tuple[float, float]] = PolygonSvgGroup.build_angles(angles_count=angles_count, cx=cx, cy=cy,
-                                                                         radius=radius)
+        angles: list[tuple[float, float]] = PolygonSvgGroup.build_angles(
+            angles_count=self.angles_count, cx=cx, cy=cy, radius=self.radius)
         for line_element in PolygonSvgGroup.build_lines(
-                angles=angles, initial_rgb=rgb, progressive_color=progressive_color, thickness=thickness):
+                angles=angles,
+                initial_rgb=self.rgb, progressive_color=self.progressive_color, thickness=self.thickness):
             elements.append(line_element)
 
-        return f"<g transform='translate({offset_x}, {offset_y})'>{"".join(elements)}</g>"
+        return f"<g transform='translate({self.offset_x}, {self.offset_y})'>{"".join(elements)}</g>"
