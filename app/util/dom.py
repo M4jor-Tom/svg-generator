@@ -24,7 +24,6 @@ class DomUtil:
 
     @staticmethod
     def wrap_with_auto_reload_html(dom_content: str, reload_delay_s: int) -> str:
-        return (f"<html>"
-                f"<head><meta http-equiv='refresh' content='{reload_delay_s}' /></head>"
-                f"{dom_content}"
-                f"</html>")
+        meta: str = DomUtil.build_element("meta", {"http-equiv": "refresh", "content": f"{reload_delay_s}"})
+        head: str = DomUtil.build_element("head", {}, meta)
+        return DomUtil.build_element("html",{}, f"{head}{dom_content}")

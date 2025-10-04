@@ -40,10 +40,14 @@ class SvgGeneratorService:
         )
         groups_with_offset: str = DomUtil.build_element(
             "g", {"transform": f"translate({width / 6}, {0})"}, ''.join(groups))
-        unindented_svg: str = (
-            f"<svg xmlns='http://www.w3.org/2000/svg' "
-            f"width='{width}' height='{height}' "
-            f"viewBox='0 0 {width} {height}'>{groups_with_offset}</svg>"
+        unindented_svg: str = DomUtil.build_element(
+            "svg",
+            {
+                "xmlns": 'http://www.w3.org/2000/svg',
+                "width": f"{width}", "height": f"{height}",
+                "viewBox": f'0 0 {width} {height}'
+            },
+            groups_with_offset
         )
         if indent:
             return SvgGeneratorService.indent_svg(unindented_svg, indentation_spaces=2)
