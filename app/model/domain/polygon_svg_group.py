@@ -2,26 +2,16 @@ from math import cos, sin, tau
 
 from pydantic import BaseModel
 
+from util import DomUtil
+
 
 class PolygonSvgGroup(BaseModel):
-    @staticmethod
-    def escape_attribute(string: str) -> str:
-        return (
-            string.replace("&", "&amp;")
-            .replace('"', "&quot;")
-            .replace("<", "&lt;")
-            .replace(">", "&gt;")
-        )
-
-    @staticmethod
-    def build_attributes_from_dict(attributes: dict[str, str]) -> str:
-        return " ".join(f'{key}="{PolygonSvgGroup.escape_attribute(value)}"' for key, value in attributes.items())
 
     @staticmethod
     def build_circle(cx: float, cy: float, radius: float, thickness: float, color: str) -> str:
         circle_attributes: dict[str, str] = {"cx": f"{cx}", "cy": f"{cy}", "r": f"{radius}", "stroke": color,
                                              "stroke-width": f"{thickness}"}
-        return f"<circle {PolygonSvgGroup.build_attributes_from_dict(circle_attributes)}/>"
+        return f"<circle {DomUtil.build_attributes_from_dict(circle_attributes)}/>"
 
     @staticmethod
     def build_angles(angles_count: int, cx: float, cy: float, radius: float) -> list[tuple[float, float]]:
@@ -47,18 +37,14 @@ class PolygonSvgGroup(BaseModel):
                 color: str = PolygonSvgGroup.build_progressive_line_color(
                     index=current_angle_index, total_amount=lines_total_count, initial_rgb=initial_rgb) \
                     if progressive_color \
-                    else PolygonSvgGroup.build_str_color(initial_rgb)
+                    else DomUtil.build_str_color(initial_rgb)
                 attributes: dict[str, str] = {"x1": f"{x1}", "y1": f"{y1}", "x2": f"{x2}", "y2": f"{y2}",
                                               "stroke": color, "stroke-width": f"{thickness}"}
                 lines_elements.append(
-                    f'<line {PolygonSvgGroup.build_attributes_from_dict(attributes)} />'
+                    f'<line {DomUtil.build_attributes_from_dict(attributes)} />'
                 )
                 current_angle_index += 1
         return lines_elements
-
-    @staticmethod
-    def build_str_color(rgb: tuple[float, float, float]) -> str:
-        return f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})"
 
     @staticmethod
     def compute_lines_amount(angles_count: int) -> int:
@@ -70,7 +56,7 @@ class PolygonSvgGroup(BaseModel):
         progression_margin: int = 255 - clearest_color_value
         location: float = index / total_amount
         rgb_offset: float = location * progression_margin
-        return PolygonSvgGroup.build_str_color(
+        return DomUtil.build_str_color(
             tuple[float, float, float]([color + rgb_offset for color in initial_rgb]))
 
     @staticmethod
