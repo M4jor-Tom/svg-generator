@@ -17,8 +17,10 @@ class DomUtil:
         return f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})"
 
     @staticmethod
-    def build_element(tag: str, attributes: dict[str, str]) -> str:
-        return f"<{tag} {DomUtil.build_attributes_from_dict(attributes)}/>"
+    def build_element(tag: str, attributes: dict[str, str], dom_content: str | None = None) -> str:
+        if dom_content is None:
+            return f"<{tag} {DomUtil.build_attributes_from_dict(attributes)}/>"
+        return f"<{tag} {DomUtil.build_attributes_from_dict(attributes)}>{dom_content}</{tag}>"
 
     @staticmethod
     def wrap_with_auto_reload_html(dom_content: str, reload_delay_s: int) -> str:

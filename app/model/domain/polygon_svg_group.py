@@ -10,16 +10,21 @@ class PolygonSvgGroup(BaseModel, SvgGroup):
     angles_count: int
     radius: float
     thickness: float
-    circle_visible: bool
     rgb: tuple[int, int, int]
     progressive_color: bool
-    offset_x: float
-    offset_y: float
+    cx: float
+    cy: float
 
     @staticmethod
-    def build_circle(cx: float, cy: float, radius: float, thickness: float, color: str) -> str:
-        return DomUtil.build_element("circle", {"cx": f"{cx}", "cy": f"{cy}", "r": f"{radius}", "stroke": color,
-                                                "stroke-width": f"{thickness}"})
+    def build_polygon_pulse_animation(radius: float) -> str:
+        return DomUtil.build_element("animateTransform", {
+            "attributeName": "transform",
+            "type": "rotate",
+            "fill": "freeze",
+            "dur": "1s",
+            "values": f"{radius};0;{radius};0;{radius};0",
+            "keyTimes": "0;0.3333;0.3333;0.6667;0.6667;1"
+        })
 
     @staticmethod
     def build_angles(angles_count: int, cx: float, cy: float, radius: float) -> list[tuple[float, float]]:
@@ -69,19 +74,12 @@ class PolygonSvgGroup(BaseModel, SvgGroup):
 
     def build(self) -> str:
         elements: list[str] = []
-        cx: float = self.radius
-        cy: float = self.radius
-        color: str = "white"
-
-        if self.circle_visible:
-            elements.append(PolygonSvgGroup.build_circle(
-                cx=cx, cy=cy, radius=self.radius, color=color, thickness=self.thickness))
 
         angles: list[tuple[float, float]] = PolygonSvgGroup.build_angles(
-            angles_count=self.angles_count, cx=cx, cy=cy, radius=self.radius)
+            angles_count=self.angles_count, cx=self.cx, cy=self.cy, radius=self.radius)
         for line_element in PolygonSvgGroup.build_lines(
                 angles=angles,
                 initial_rgb=self.rgb, progressive_color=self.progressive_color, thickness=self.thickness):
             elements.append(line_element)
 
-        return f"<g transform='translate({self.offset_x}, {self.offset_y})'>{"".join(elements)}</g>"
+        return f"<g>{"".join(elements)}</g>"
