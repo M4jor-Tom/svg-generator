@@ -18,9 +18,8 @@ class PolygonSvgGroup(BaseModel, SvgGroup):
 
     @staticmethod
     def build_circle(cx: float, cy: float, radius: float, thickness: float, color: str) -> str:
-        circle_attributes: dict[str, str] = {"cx": f"{cx}", "cy": f"{cy}", "r": f"{radius}", "stroke": color,
-                                             "stroke-width": f"{thickness}"}
-        return f"<circle {DomUtil.build_attributes_from_dict(circle_attributes)}/>"
+        return DomUtil.build_element("circle", {"cx": f"{cx}", "cy": f"{cy}", "r": f"{radius}", "stroke": color,
+                                                "stroke-width": f"{thickness}"})
 
     @staticmethod
     def build_angles(angles_count: int, cx: float, cy: float, radius: float) -> list[tuple[float, float]]:
@@ -47,10 +46,10 @@ class PolygonSvgGroup(BaseModel, SvgGroup):
                     index=current_angle_index, total_amount=lines_total_count, initial_rgb=initial_rgb) \
                     if progressive_color \
                     else DomUtil.build_str_color(initial_rgb)
-                attributes: dict[str, str] = {"x1": f"{x1}", "y1": f"{y1}", "x2": f"{x2}", "y2": f"{y2}",
-                                              "stroke": color, "stroke-width": f"{thickness}"}
                 lines_elements.append(
-                    f'<line {DomUtil.build_attributes_from_dict(attributes)} />'
+                    DomUtil.build_element("line", {"x1": f"{x1}", "y1": f"{y1}",
+                                                   "x2": f"{x2}", "y2": f"{y2}",
+                                                   "stroke": color, "stroke-width": f"{thickness}"})
                 )
                 current_angle_index += 1
         return lines_elements

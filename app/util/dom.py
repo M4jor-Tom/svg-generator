@@ -15,3 +15,7 @@ class DomUtil:
     @staticmethod
     def build_str_color(rgb: tuple[float, float, float]) -> str:
         return f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})"
+
+    @staticmethod
+    def build_element(tag: str, attributes: dict[str, str]) -> str:
+        return f"<{tag} {DomUtil.build_attributes_from_dict(attributes)}/>"
