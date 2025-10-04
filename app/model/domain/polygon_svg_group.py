@@ -19,7 +19,8 @@ class PolygonSvgGroup(BaseModel):
 
     @staticmethod
     def build_circle(cx: float, cy: float, radius: float, thickness: float, color: str) -> str:
-        circle_attributes: dict[str, str] = {"cx": f"{cx}", "cy": f"{cy}", "r": f"{radius}", "stroke": color, "stroke-width": f"{thickness}"}
+        circle_attributes: dict[str, str] = {"cx": f"{cx}", "cy": f"{cy}", "r": f"{radius}", "stroke": color,
+                                             "stroke-width": f"{thickness}"}
         return f"<circle {PolygonSvgGroup.build_attributes_from_dict(circle_attributes)}/>"
 
     @staticmethod
@@ -33,18 +34,44 @@ class PolygonSvgGroup(BaseModel):
         return points
 
     @staticmethod
-    def build_lines(angles: list[tuple[float, float]], thickness: float, color: str) -> list[str]:
-        attributes: dict[str, str] = {"stroke": color, "stroke-width": f"{thickness}"}
+    def build_lines(angles: list[tuple[float, float]], thickness: float, initial_rgb: tuple[int, int, int],
+                    progressive_color: bool) -> list[str]:
         angles_count: int = len(angles)
+        lines_total_count: int = PolygonSvgGroup.compute_lines_amount(angles_count=angles_count)
         lines_elements: list[str] = []
+        current_angle_index: int = 0
         for angle_index in range(angles_count):
             x1, y1 = angles[angle_index]
             for j in range(angle_index + 1, angles_count):
                 x2, y2 = angles[j]
+                color: str = PolygonSvgGroup.build_progressive_line_color(
+                    index=current_angle_index, total_amount=lines_total_count, initial_rgb=initial_rgb) \
+                    if progressive_color \
+                    else PolygonSvgGroup.build_str_color(initial_rgb)
+                attributes: dict[str, str] = {"x1": f"{x1}", "y1": f"{y1}", "x2": f"{x2}", "y2": f"{y2}",
+                                              "stroke": color, "stroke-width": f"{thickness}"}
                 lines_elements.append(
-                    f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" {PolygonSvgGroup.build_attributes_from_dict(attributes)} />'
+                    f'<line {PolygonSvgGroup.build_attributes_from_dict(attributes)} />'
                 )
+                current_angle_index += 1
         return lines_elements
+
+    @staticmethod
+    def build_str_color(rgb: tuple[float, float, float]) -> str:
+        return f"rgb({rgb[0]}, {rgb[1]}, {rgb[2]})"
+
+    @staticmethod
+    def compute_lines_amount(angles_count: int) -> int:
+        return int(angles_count * (angles_count - 1) / 2)
+
+    @staticmethod
+    def build_progressive_line_color(index: int, total_amount: int, initial_rgb: tuple[int, int, int]) -> str:
+        clearest_color_value: int = max(initial_rgb)
+        progression_margin: int = 255 - clearest_color_value
+        location: float = index / total_amount
+        rgb_offset: float = location * progression_margin
+        return PolygonSvgGroup.build_str_color(
+            tuple[float, float, float]([color + rgb_offset for color in initial_rgb]))
 
     @staticmethod
     def build_group(
@@ -52,9 +79,8 @@ class PolygonSvgGroup(BaseModel):
             radius: float,
             thickness: float,
             circle_visible: bool,
-            init_red: float,
-            init_green: float,
-            init_blue: float,
+            rgb: tuple[int, int, int],
+            progressive_color: bool,
             offset_x: float,
             offset_y: float
     ) -> str:
@@ -63,14 +89,13 @@ class PolygonSvgGroup(BaseModel):
         cy: float = radius
         color: str = "white"
 
-        if angles_count < 2:
-            raise ValueError("n must be >= 2")
-
         if circle_visible:
             elements.append(PolygonSvgGroup.build_circle(cx=cx, cy=cy, radius=radius, color=color, thickness=thickness))
 
-        angles: list[tuple[float, float]] = PolygonSvgGroup.build_angles(angles_count=angles_count, cx=cx, cy=cy, radius=radius)
-        for line_element in PolygonSvgGroup.build_lines(angles=angles, color=color, thickness=thickness):
+        angles: list[tuple[float, float]] = PolygonSvgGroup.build_angles(angles_count=angles_count, cx=cx, cy=cy,
+                                                                         radius=radius)
+        for line_element in PolygonSvgGroup.build_lines(
+                angles=angles, initial_rgb=rgb, progressive_color=progressive_color, thickness=thickness):
             elements.append(line_element)
 
         return f"<g transform='translate({offset_x}, {offset_y})'>{"".join(elements)}</g>"
