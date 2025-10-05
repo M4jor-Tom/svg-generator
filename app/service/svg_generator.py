@@ -1,7 +1,7 @@
 from xml.dom import minidom
 from xml.dom.minidom import Document
 
-from model.domain import PolygonSvgGroup, CirclePulsarSvgElement, BackgroundSvgElement
+from model.domain import PolygonSvgGroup, CirclePulsarSvgElement, BackgroundSvgElement, PulseMode
 from util import DomUtil
 
 
@@ -22,15 +22,16 @@ class SvgGeneratorService:
         circle_radius: str = "50vmin"
         cx: str = "50vmin"
         cy: str = "50vmin"
+        pulse_mode: PulseMode = PulseMode(duration_s=1, count=3)
         background_svg: BackgroundSvgElement | None = BackgroundSvgElement(
             width=width, height=height, rgb=background_rgb) if background_rgb else None
         circle_pulsar: CirclePulsarSvgElement = CirclePulsarSvgElement(
-            radius=circle_radius, pulses_count=3,
+            radius=circle_radius, pulse_mode=pulse_mode,
             fill_rgb=(255, 255, 255, 0), stroke_rgb=(0, 0, 127),
             cx=cx, cy=cy, thickness=3
         )
         polygon_svg_group: PolygonSvgGroup = PolygonSvgGroup(
-            angles_count=7, thickness=5, rgb=(0, 0, 50), progressive_color=True, pulse=False)
+            angles_count=7, thickness=5, rgb=(0, 0, 50), progressive_color=True, pulse_mode=pulse_mode)
         groups: tuple[str, ...] = (
             background_svg.build(),
             circle_pulsar.build(),

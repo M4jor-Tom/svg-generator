@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from model.domain import SvgElement
+from model.domain import SvgElement, PulseMode
 from util import DomUtil
 
 
@@ -11,18 +11,10 @@ class CirclePulsarSvgElement(BaseModel, SvgElement):
     thickness: float
     fill_rgb: tuple[float, float, float, float]
     stroke_rgb: tuple[float, float, float]
-    pulses_count: int
+    pulse_mode: PulseMode
 
-    @staticmethod
-    def build_circle_pulse_animation(radius: str, pulses_count: int, duration_s: float) -> str:
-        return DomUtil.build_element("animate", {
-            "attributeName": "r",
-            "fill": "freeze",
-            "dur": f"{duration_s}s",
-            "values": ';'.join([f"{radius};0" for _ in range(pulses_count)]),
-            "keyTimes": ';'.join(
-                [f"{index / pulses_count};{(index + 1) / pulses_count}" for index in range(pulses_count)])
-        })
+    def build_circle_pulse_animation(self, radius: str) -> str:
+        return self.pulse_mode.build_animation(f"{radius}", "0", "animate", "r")
 
     def build(self) -> str:
         return DomUtil.build_element(
@@ -31,6 +23,4 @@ class CirclePulsarSvgElement(BaseModel, SvgElement):
                 "r": self.radius, "stroke-width": f"{self.thickness}",
                 "fill": DomUtil.build_str_color(self.fill_rgb),
                 "stroke": DomUtil.build_str_color(self.stroke_rgb)},
-            dom_content=CirclePulsarSvgElement.build_circle_pulse_animation(radius=self.radius,
-                                                                            pulses_count=self.pulses_count,
-                                                                            duration_s=1))
+            dom_content=self.build_circle_pulse_animation(radius=self.radius))

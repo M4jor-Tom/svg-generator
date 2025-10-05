@@ -1,3 +1,4 @@
+from .pulse_mode import PulseMode
 from .svg_element import SvgElement
 from .background_svg_element import BackgroundSvgElement
 from .circle_pulsar_svg_element import CirclePulsarSvgElement
