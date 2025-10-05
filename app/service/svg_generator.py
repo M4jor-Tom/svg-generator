@@ -1,8 +1,7 @@
+from xml.dom import minidom
 from xml.dom.minidom import Document
 
-from model.domain import PolygonSvgGroup, BackgroundSvgElement, CirclePulsarSvgElement
-from xml.dom import minidom
-
+from model.domain import PolygonSvgGroup, CirclePulsarSvgElement, BackgroundSvgElement
 from util import DomUtil
 
 
@@ -17,24 +16,26 @@ class SvgGeneratorService:
         )
 
     @staticmethod
-    def build_svg(width: float, height: float, indent: bool) -> str:
-        circle_radius: float = height / 2
-        polygon_radius: float = height / 2
-        cx: float = height / 2
-        cy: float = height / 2
-        background: BackgroundSvgElement = BackgroundSvgElement(width=width, height=height, color="black")
+    def build_svg(indent: bool, background_rgb: tuple[float, float, float] | None) -> str:
+        height: str = "100vmin"
+        width: str = "100vmin"
+        circle_radius: str = "50vmin"
+        cx: str = "50vmin"
+        cy: str = "50vmin"
+        background_svg: BackgroundSvgElement | None = BackgroundSvgElement(
+            width=width, height=height, rgb=background_rgb) if background_rgb else None
         circle_pulsar: CirclePulsarSvgElement = CirclePulsarSvgElement(
             radius=circle_radius, pulses_count=3,
-            fill_rgb=(255, 255, 255), stroke_rgb=(0, 0, 127),
+            fill_rgb=(255, 255, 255, 0), stroke_rgb=(0, 0, 127),
             cx=cx, cy=cy, thickness=3
         )
         polygon_svg_group: PolygonSvgGroup = PolygonSvgGroup(
-            angles_count=7, radius=polygon_radius, thickness=5,
-            rgb=(0, 0, 50), progressive_color=True, cx=cx, cy=cy,
-            pulse=False
-        )
+            angles_count=7, thickness=5, rgb=(0, 0, 50), progressive_color=True, pulse=False)
         groups: tuple[str, ...] = (
-            background.build(),
+            background_svg.build(),
+            circle_pulsar.build(),
+            polygon_svg_group.build()
+        ) if background_svg else (
             circle_pulsar.build(),
             polygon_svg_group.build()
         )
@@ -43,7 +44,7 @@ class SvgGeneratorService:
             {
                 "xmlns": 'http://www.w3.org/2000/svg',
                 "width": f"{width}", "height": f"{height}",
-                "viewBox": f'0 0 {width} {height}'
+                "viewBox": f'0 0 {height} {height}'
             },
             ''.join(groups)
         )

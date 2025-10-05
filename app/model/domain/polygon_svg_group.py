@@ -8,12 +8,9 @@ from util import DomUtil
 
 class PolygonSvgGroup(BaseModel, SvgElement):
     angles_count: int
-    radius: float
     thickness: float
     rgb: tuple[int, int, int]
     progressive_color: bool
-    cx: float
-    cy: float
     pulse: bool
 
     def build_polygon_pulse_animation(self, duration_s: float) -> str:
@@ -27,14 +24,18 @@ class PolygonSvgGroup(BaseModel, SvgElement):
         })
 
     @staticmethod
-    def build_angles(angles_count: int, cx: float, cy: float, radius: float) -> list[tuple[float, float]]:
+    def build_angles(angles_count: int) -> list[tuple[float, float]]:
         points: list[tuple[float, float]] = []
         for i in range(angles_count):
             angle_in_radians: float = -tau / 4 + i * (tau / angles_count)
-            x: float = cx + radius * cos(angle_in_radians)
-            y: float = cy + radius * sin(angle_in_radians)
+            x: float = cos(angle_in_radians)
+            y: float = sin(angle_in_radians)
             points.append((x, y))
         return points
+
+    @staticmethod
+    def normalize_coordinate_to_percent(coordinate: float) -> str:
+        return f"{((coordinate + 1) / 2) * 100}vmin"
 
     @staticmethod
     def build_lines(angles: list[tuple[float, float]], thickness: float, initial_rgb: tuple[int, int, int],
@@ -44,16 +45,16 @@ class PolygonSvgGroup(BaseModel, SvgElement):
         lines_elements: list[str] = []
         current_angle_index: int = 0
         for angle_index in range(angles_count):
-            x1, y1 = angles[angle_index]
+            x1, y1 = map(PolygonSvgGroup.normalize_coordinate_to_percent, angles[angle_index])
             for j in range(angle_index + 1, angles_count):
-                x2, y2 = angles[j]
+                x2, y2 = map(PolygonSvgGroup.normalize_coordinate_to_percent, angles[j])
                 color: str = PolygonSvgGroup.build_progressive_line_color(
                     index=current_angle_index, total_amount=lines_total_count, initial_rgb=initial_rgb) \
                     if progressive_color \
                     else DomUtil.build_str_color(initial_rgb)
                 lines_elements.append(
-                    DomUtil.build_element("line", {"x1": f"{x1}", "y1": f"{y1}",
-                                                   "x2": f"{x2}", "y2": f"{y2}",
+                    DomUtil.build_element("line", {"x1": x1, "y1": y1,
+                                                   "x2": x2, "y2": y2,
                                                    "stroke": color, "stroke-width": f"{thickness}"})
                 )
                 current_angle_index += 1
@@ -79,7 +80,7 @@ class PolygonSvgGroup(BaseModel, SvgElement):
             elements.append(self.build_polygon_pulse_animation(duration_s=1))
 
         angles: list[tuple[float, float]] = PolygonSvgGroup.build_angles(
-            angles_count=self.angles_count, cx=self.cx, cy=self.cy, radius=self.radius)
+            angles_count=self.angles_count)
         for line_element in PolygonSvgGroup.build_lines(
                 angles=angles,
                 initial_rgb=self.rgb, progressive_color=self.progressive_color, thickness=self.thickness):

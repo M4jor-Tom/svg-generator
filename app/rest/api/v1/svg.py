@@ -9,5 +9,6 @@ svg_router: APIRouter = APIRouter()
 
 @svg_router.get(path=svg_strip, tags=[master], response_class=HTMLResponse)
 def get_web_svg(svg_generator_service: SvgGeneratorService = Depends(SvgGeneratorService)) -> str:
+    background_rgb: tuple[float, float, float] = (220, 220, 220)
     return DomUtil.wrap_with_html(
-        svg_generator_service.build_svg(width=1500, height=900, indent=False), reload_delay_s=5, auto_reload=True)
+        svg_generator_service.build_svg(indent=False, background_rgb=None), reload_delay_s=5, background_rgb=background_rgb)

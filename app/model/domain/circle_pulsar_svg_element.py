@@ -5,16 +5,16 @@ from util import DomUtil
 
 
 class CirclePulsarSvgElement(BaseModel, SvgElement):
-    cx: float
-    cy: float
-    radius: float
+    cx: str
+    cy: str
+    radius: str
     thickness: float
-    fill_rgb: tuple[float, float, float]
+    fill_rgb: tuple[float, float, float, float]
     stroke_rgb: tuple[float, float, float]
     pulses_count: int
 
     @staticmethod
-    def build_circle_pulse_animation(radius: float, pulses_count: int, duration_s: float) -> str:
+    def build_circle_pulse_animation(radius: str, pulses_count: int, duration_s: float) -> str:
         return DomUtil.build_element("animate", {
             "attributeName": "r",
             "fill": "freeze",
@@ -27,8 +27,8 @@ class CirclePulsarSvgElement(BaseModel, SvgElement):
     def build(self) -> str:
         return DomUtil.build_element(
             "circle", {
-                "cx": f"{self.cx}", "cy": f"{self.cy}",
-                "r": f"{self.radius}", "stroke-width": f"{self.thickness}",
+                "cx": self.cx, "cy": self.cy,
+                "r": self.radius, "stroke-width": f"{self.thickness}",
                 "fill": DomUtil.build_str_color(self.fill_rgb),
                 "stroke": DomUtil.build_str_color(self.stroke_rgb)},
             dom_content=CirclePulsarSvgElement.build_circle_pulse_animation(radius=self.radius,
