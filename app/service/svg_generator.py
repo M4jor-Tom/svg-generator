@@ -17,12 +17,12 @@ class SvgGeneratorService:
         )
 
     @staticmethod
-    def get_svg(width: float, height: float, indent: bool) -> str:
+    def build_svg(width: float, height: float, indent: bool) -> str:
         circle_radius: float = height / 2
         polygon_radius: float = height / 2
         cx: float = height / 2
         cy: float = height / 2
-        background: BackgroundSvgElement = BackgroundSvgElement(width=width, height=height, color="white")
+        background: BackgroundSvgElement = BackgroundSvgElement(width=width, height=height, color="black")
         circle_pulsar: CirclePulsarSvgElement = CirclePulsarSvgElement(
             radius=circle_radius, pulses_count=3,
             fill_rgb=(255, 255, 255), stroke_rgb=(0, 0, 127),
@@ -38,8 +38,6 @@ class SvgGeneratorService:
             circle_pulsar.build(),
             polygon_svg_group.build()
         )
-        groups_with_offset: str = DomUtil.build_element(
-            "g", {"transform": f"translate({width / 6}, {0})"}, ''.join(groups))
         unindented_svg: str = DomUtil.build_element(
             "svg",
             {
@@ -47,7 +45,7 @@ class SvgGeneratorService:
                 "width": f"{width}", "height": f"{height}",
                 "viewBox": f'0 0 {width} {height}'
             },
-            groups_with_offset
+            ''.join(groups)
         )
         if indent:
             return SvgGeneratorService.indent_svg(unindented_svg, indentation_spaces=2)

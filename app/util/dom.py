@@ -23,7 +23,8 @@ class DomUtil:
         return f"<{tag} {DomUtil.build_attributes_from_dict(attributes)}>{dom_content}</{tag}>"
 
     @staticmethod
-    def wrap_with_auto_reload_html(dom_content: str, reload_delay_s: int) -> str:
-        meta: str = DomUtil.build_element("meta", {"http-equiv": "refresh", "content": f"{reload_delay_s}"})
-        head: str = DomUtil.build_element("head", {}, meta)
-        return DomUtil.build_element("html",{}, f"{head}{dom_content}")
+    def wrap_with_html(dom_content: str, reload_delay_s: int, auto_reload: bool) -> str:
+        auto_reload_meta: str = DomUtil.build_element("meta", {"http-equiv": "refresh", "content": f"{reload_delay_s}"})
+        head: str = DomUtil.build_element("head", {}, auto_reload_meta if auto_reload else None)
+        body: str = DomUtil.build_element("body", {"style": "margin: 0"}, dom_content)
+        return DomUtil.build_element("html", {}, f"{head}{body}")
