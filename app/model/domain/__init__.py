@@ -1,5 +1,6 @@
 from .pulse_mode import PulseMode
 from .svg_element import SvgElement
+from .polygon_svg_group import PolygonSvgGroup
 from .background_svg_element import BackgroundSvgElement
 from .circle_pulsar_svg_element import CirclePulsarSvgElement
-from .polygon_svg_group import PolygonSvgGroup
+from .circular_polygon_svg_group import CircularPolygonSvgGroup
