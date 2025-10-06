@@ -1,7 +1,7 @@
 from xml.dom import minidom
 from xml.dom.minidom import Document
 
-from model.domain import CircularPolygonSvgGroup, CirclePulsarSvgElement, BackgroundSvgElement, PulseMode
+from model.domain import CircularPolygonSvgGroup, CirclePulsarSvgElement, BackgroundSvgElement, PulseMode, ThetaSvgGroup
 from util import DomUtil
 
 
@@ -32,13 +32,16 @@ class SvgGeneratorService:
         )
         circular_polygon_svg_group: CircularPolygonSvgGroup = CircularPolygonSvgGroup(
             angles_count=7, thickness=5, initial_rgb=(0, 0, 50), progressive_color=True, pulse_mode=pulse_mode)
+        theta_svg_group: ThetaSvgGroup = ThetaSvgGroup(initial_rgb=(0, 0, 0), thickness=3, progressive_color=False)
         groups: tuple[str, ...] = (
             background_svg.build(),
             circle_pulsar.build(),
-            circular_polygon_svg_group.build()
+            circular_polygon_svg_group.build(),
+            theta_svg_group.build()
         ) if background_svg else (
             circle_pulsar.build(),
-            circular_polygon_svg_group.build()
+            circular_polygon_svg_group.build(),
+            theta_svg_group.build()
         )
         unindented_svg: str = DomUtil.build_element(
             "svg",
