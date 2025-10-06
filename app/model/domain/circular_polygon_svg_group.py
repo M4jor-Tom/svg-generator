@@ -10,23 +10,21 @@ class CircularPolygonSvgGroup(PolygonSvgGroup, BaseModel):
     angles_count: int
     pulse_mode: PulseMode | None
 
-    def build_line_color(self, current_point_index: int, total_lines_count: int, initial_rgb: tuple[int, int, int]) -> \
+    def build_line_color(self, current_point_index: int, total_lines_count: int) -> \
             tuple[float, float, float]:
-        clearest_color_value: int = max(initial_rgb)
+        if not self.progressive_color:
+            return self.initial_rgb
+        clearest_color_value: int = max(self.initial_rgb)
         progression_margin: int = 255 - clearest_color_value
         location: float = current_point_index / total_lines_count
         rgb_offset: float = location * progression_margin
-        return tuple[float, float, float]([color + rgb_offset for color in initial_rgb])
+        return tuple[float, float, float]([color + rgb_offset for color in self.initial_rgb])
 
-    def build_line_content(self, line_color: tuple[float, float, float]) -> str | None:
-        return CircularPolygonSvgGroup.build_line_pulse_animation(self.pulse_mode,
-                                                                  from_rgb=line_color,
-                                                                  to_rgb=(0, 0, 0))
-
-    @staticmethod
-    def build_line_pulse_animation(pulse_mode: PulseMode, from_rgb: tuple[float, float, float],
-                                   to_rgb: tuple[float, float, float]) -> str:
-        return pulse_mode.build_animation(
+    def build_line_content(self, from_rgb: tuple[float, float, float],
+                           to_rgb: tuple[float, float, float]) -> str | None:
+        if self.pulse_mode is None:
+            return None
+        return self.pulse_mode.build_animation(
             DomUtil.build_str_color(from_rgb),
             DomUtil.build_str_color(to_rgb),
             "animate", "stroke")
