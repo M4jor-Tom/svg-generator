@@ -15,8 +15,8 @@ class ThetaSvgGroup(PolygonSvgGroup, BaseModel):
         return ""
 
     @staticmethod
-    def normalize_coordinate_to_vmin(coordinate: float) -> str:
-        return f"{((coordinate + 1) / 2) * 100}vmin"
+    def normalize_coordinate(coordinate: float) -> str:
+        return f"{((coordinate + 1) / 2) * 100}"
 
     @staticmethod
     def build_right_bottom_part_points() -> list[tuple[float, float]]:
@@ -38,12 +38,12 @@ class ThetaSvgGroup(PolygonSvgGroup, BaseModel):
     def build_eye(animate: bool) -> str:
         eye_color: str = DomUtil.build_str_color((255, 0, 0))
         transparent: str = DomUtil.build_str_color((0, 0, 0, 0))
-        centered_attributes: dict[str, str] = {"cy": "50vmin", "cx": "50vmin"}
+        common_attributes: dict[str, str] = {"cy": "50", "cx": "50", "stroke-width": '.2'}
         return ''.join([
             DomUtil.build_element(
-                "circle", {**centered_attributes, "r": ".3vmin", "fill": eye_color}),
+                "circle", {**common_attributes, "r": ".3", "fill": eye_color}),
             DomUtil.build_element(
-                "circle", {**centered_attributes, "r": ".6vmin", "fill": transparent, "stroke": eye_color}
+                "circle", {**common_attributes, "r": ".6", "fill": transparent, "stroke": eye_color}
             )
         ])
 

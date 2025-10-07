@@ -17,8 +17,8 @@ class PolygonSvgGroup(SvgElement, BaseModel, ABC):
         return int(angles_count * (angles_count - 1) / 2)
 
     @staticmethod
-    def normalize_coordinate_to_vmin(coordinate: float) -> str:
-        return f"{((coordinate + 1) / 2) * 100}vmin"
+    def normalize_coordinate(coordinate: float) -> str:
+        return f"{((coordinate + 1) / 2) * 100}"
 
     @abstractmethod
     def build_line_color(self, current_point_index: int, total_lines_count: int) -> tuple[float, float, float]:
@@ -35,8 +35,8 @@ class PolygonSvgGroup(SvgElement, BaseModel, ABC):
         lines_elements: list[str] = []
         line_combinations = combinations(points, 2)
         for point1, point2 in line_combinations:
-            x1, y1 = map(PolygonSvgGroup.normalize_coordinate_to_vmin, point1)
-            x2, y2 = map(PolygonSvgGroup.normalize_coordinate_to_vmin, point2)
+            x1, y1 = map(PolygonSvgGroup.normalize_coordinate, point1)
+            x2, y2 = map(PolygonSvgGroup.normalize_coordinate, point2)
             color: tuple[float, float, float] = self.build_line_color(current_point_index, lines_total_count)
             lines_elements.append(DomUtil.build_element("line", {
                 "x1": f"{x1}", "y1": f"{y1}",

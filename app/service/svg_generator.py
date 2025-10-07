@@ -19,20 +19,22 @@ class SvgGeneratorService:
     def build_svg(indent: bool, background_rgb: tuple[float, float, float] | None) -> str:
         height: str = "100vmin"
         width: str = "100vmin"
-        circle_radius: str = "50vmin"
-        cx: str = "50vmin"
-        cy: str = "50vmin"
+        circle_radius: str = "50"
+        cx: str = "50"
+        cy: str = "50"
+        thickness: float = .5
         pulse_mode: PulseMode = PulseMode(duration_s=1, count=3)
         background_svg: BackgroundSvgElement | None = BackgroundSvgElement(
             width=width, height=height, rgb=background_rgb) if background_rgb else None
         circle_pulsar: CirclePulsarSvgElement = CirclePulsarSvgElement(
             radius=circle_radius, pulse_mode=pulse_mode,
             fill_rgb=(255, 255, 255, 0), stroke_rgb=(0, 0, 127),
-            cx=cx, cy=cy, thickness=3
+            cx=cx, cy=cy, thickness=thickness
         )
         circular_polygon_svg_group: CircularPolygonSvgGroup = CircularPolygonSvgGroup(
-            angles_count=7, thickness=5, initial_rgb=(0, 0, 50), progressive_color=True, pulse_mode=pulse_mode)
-        theta_svg_group: ThetaSvgGroup = ThetaSvgGroup(initial_rgb=(0, 0, 0), thickness=3, progressive_color=False)
+            angles_count=7, thickness=thickness, initial_rgb=(0, 0, 50), progressive_color=True, pulse_mode=pulse_mode)
+        theta_svg_group: ThetaSvgGroup = ThetaSvgGroup(initial_rgb=(0, 0, 0), thickness=thickness,
+                                                       progressive_color=False)
         groups: tuple[str, ...] = (
             background_svg.build(),
             circle_pulsar.build(),
@@ -48,7 +50,7 @@ class SvgGeneratorService:
             {
                 "xmlns": 'http://www.w3.org/2000/svg',
                 "width": f"{width}", "height": f"{height}",
-                "viewBox": f'0 0 {height} {height}'
+                "viewBox": f'0 0 100 100'
             },
             ''.join(groups)
         )
