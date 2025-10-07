@@ -2,10 +2,14 @@ from xml.dom import minidom
 from xml.dom.minidom import Document
 
 from model.domain import CircularPolygonSvgGroup, CirclePulsarSvgElement, BackgroundSvgElement, PulseMode, ThetaSvgGroup
+from service import StateService
 from util import DomUtil
 
 
 class SvgGeneratorService:
+
+    def __init__(self, state_service: StateService):
+        self.state_service = state_service
 
     @staticmethod
     def indent_svg(svg: str, indentation_spaces: int) -> str:
@@ -15,8 +19,7 @@ class SvgGeneratorService:
             [line for line in indented_svg.split("\n") if line.strip()]
         )
 
-    @staticmethod
-    def build_svg(indent: bool, background_rgb: tuple[float, float, float] | None) -> str:
+    def build_svg(self, indent: bool, background_rgb: tuple[float, float, float] | None) -> str:
         height: str = "100vmin"
         width: str = "100vmin"
         circle_radius: str = "50"
@@ -32,19 +35,21 @@ class SvgGeneratorService:
             cx=cx, cy=cy, thickness=thickness
         )
         circular_polygon_svg_group: CircularPolygonSvgGroup = CircularPolygonSvgGroup(
-            angles_count=7, thickness=thickness, initial_rgb=(0, 0, 50), progressive_color=True, pulse_mode=pulse_mode)
+            angles_count=self.state_service.state.polygon_angles, thickness=thickness, initial_rgb=(0, 0, 50),
+            progressive_color=True,
+            pulse_mode=pulse_mode if self.state_service.state.pulse_polygon else None)
         theta_svg_group: ThetaSvgGroup = ThetaSvgGroup(initial_rgb=(0, 0, 0), thickness=thickness,
-                                                       progressive_color=False, spacing=0, animate=False)
-        groups: tuple[str, ...] = (
-            background_svg.build(),
-            circle_pulsar.build(),
-            circular_polygon_svg_group.build(),
-            theta_svg_group.build()
-        ) if background_svg else (
-            circle_pulsar.build(),
-            circular_polygon_svg_group.build(),
-            theta_svg_group.build()
-        )
+                                                       progressive_color=False,
+                                                       spacing=self.state_service.state.space_theta_wings,
+                                                       animate=self.state_service.state.animate_theta_eye)
+        groups: list[str] = []
+        if background_svg is not None:
+            groups.append(background_svg.build())
+        if self.state_service.state.pulse_circle:
+            groups.append(circle_pulsar.build())
+        groups.append(circular_polygon_svg_group.build())
+        groups.append(theta_svg_group.build())
+
         unindented_svg: str = DomUtil.build_element(
             "svg",
             {

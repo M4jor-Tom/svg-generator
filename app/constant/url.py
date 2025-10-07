@@ -1,4 +1,6 @@
 health_strip: str = "/health"
+ui_strip: str = "/ui"
 api_strip: str = "/api"
 v1_strip: str = "/v1"
 svg_strip: str = "/web-svg"
+control_strip: str = "/control"

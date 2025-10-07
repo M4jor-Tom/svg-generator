@@ -5,6 +5,7 @@ from loguru import logger
 
 from core.config import PROFILE, ROLE, APP_NAME
 from rest import health_router
+from rest.ui import ui_router
 from rest.api import api_router
 
 
@@ -18,3 +19,4 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(health_router)
 app.include_router(api_router)
+app.include_router(ui_router)
