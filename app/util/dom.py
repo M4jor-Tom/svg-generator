@@ -39,4 +39,5 @@ class DomUtil:
             "text-align": "center",
             "background-color": DomUtil.build_str_color(background_rgb)
         })}, dom_content)
-        return DomUtil.build_element("html", {}, f"{head}{body}")
+        html_element: str = DomUtil.build_element("html", {}, f"{head}{body}")
+        return f"<!DOCTYPE html>{html_element}"
