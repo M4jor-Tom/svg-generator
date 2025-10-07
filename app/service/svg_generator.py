@@ -22,7 +22,7 @@ class SvgGeneratorService:
         circle_radius: str = "50"
         cx: str = "50"
         cy: str = "50"
-        thickness: float = .5
+        thickness: float = .4
         pulse_mode: PulseMode = PulseMode(duration_s=1, count=3)
         background_svg: BackgroundSvgElement | None = BackgroundSvgElement(
             width=width, height=height, rgb=background_rgb) if background_rgb else None
@@ -34,7 +34,7 @@ class SvgGeneratorService:
         circular_polygon_svg_group: CircularPolygonSvgGroup = CircularPolygonSvgGroup(
             angles_count=7, thickness=thickness, initial_rgb=(0, 0, 50), progressive_color=True, pulse_mode=pulse_mode)
         theta_svg_group: ThetaSvgGroup = ThetaSvgGroup(initial_rgb=(0, 0, 0), thickness=thickness,
-                                                       progressive_color=False)
+                                                       progressive_color=False, spacing=0, animate=False)
         groups: tuple[str, ...] = (
             background_svg.build(),
             circle_pulsar.build(),
