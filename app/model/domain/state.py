@@ -7,3 +7,4 @@ class State(BaseModel):
     pulse_polygon: bool
     space_theta_wings: float
     animate_theta_eye: bool
+    theta_eye_butterfly_animation: bool

@@ -1,4 +1,6 @@
 from .state import State
+from .animation_mode import AnimationMode
+from .butterfly_mode import ButterflyMode
 from .pulse_mode import PulseMode
 from .svg_element import SvgElement
 from .polygon_svg_group import PolygonSvgGroup

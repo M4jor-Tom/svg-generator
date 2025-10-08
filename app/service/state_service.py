@@ -8,5 +8,6 @@ class StateService:
             pulse_circle=False,
             polygon_angles=7,
             animate_theta_eye=False,
+            theta_eye_butterfly_animation=False,
             space_theta_wings=False
         )

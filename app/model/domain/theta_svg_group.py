@@ -1,12 +1,14 @@
 from pydantic import BaseModel
 
 from model.domain import PolygonSvgGroup
+from model.domain.butterfly_mode import ButterflyMode
 from util import DomUtil, GeometryUtil
 
 
 class ThetaSvgGroup(PolygonSvgGroup, BaseModel):
     animate: bool
     spacing: float
+    butterfly_mode: ButterflyMode | None
 
     def build_line_color(self, current_point_index: int, total_lines_count: int) -> \
             tuple[float, float, float]:
@@ -32,6 +34,15 @@ class ThetaSvgGroup(PolygonSvgGroup, BaseModel):
     def build_right_top_part_points(self) -> list[tuple[float, float]]:
         return GeometryUtil.mirror(self.build_right_bottom_part_points(), x=False, y=True)
 
+    def build_eye_animation(self) -> str:
+        return DomUtil.build_element("animateTransform",
+                                     {"type": "rotate", "attributeName": "transform", "from": "0 50 50",
+                                      "to": "360 50 50",
+                                      "dur": "2.5s", "repeatCount": "indefinite"}) \
+            if self.butterfly_mode is None \
+            else self.butterfly_mode.build_animation(from_value=".5", to_value="1", animation_tag="animate",
+                                                     animated_property="stroke-dasharray")
+
     def build_eye(self) -> str:
         eye_color: str = DomUtil.build_str_color((255, 0, 0))
         transparent: str = DomUtil.build_str_color((0, 0, 0, 0))
@@ -44,9 +55,7 @@ class ThetaSvgGroup(PolygonSvgGroup, BaseModel):
         eye_animated_contour: str = DomUtil.build_element(
             "circle",
             {**common_attributes, "r": ".8", "fill": transparent, "stroke": eye_color, "stroke-dasharray": ".5"},
-            DomUtil.build_element("animateTransform",
-                                  {"type": "rotate", "attributeName": "transform", "from": "0 50 50", "to": "360 50 50",
-                                   "dur": "3s", "repeatCount": "indefinite"})
+            self.build_eye_animation()
         )
         return ''.join([eye_center, eye_animated_contour]) if self.animate else ''.join(
             [eye_center, eye_static_contour])
