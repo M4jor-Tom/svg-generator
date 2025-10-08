@@ -9,10 +9,11 @@ class ThetaSvgGroup(PolygonSvgGroup, BaseModel):
     animate: bool
     spacing: float
     butterfly_mode: ButterflyMode | None
+    eye_color: tuple[int, int, int]
 
     def build_line_color(self, current_point_index: int, total_lines_count: int) -> \
             tuple[float, float, float]:
-        return 0, 0, 0
+        return self.initial_rgb
 
     def build_line_content(self, from_rgb: tuple[float, float, float],
                            to_rgb: tuple[float, float, float]) -> str | None:
@@ -44,7 +45,7 @@ class ThetaSvgGroup(PolygonSvgGroup, BaseModel):
                                                      animated_property="stroke-dasharray")
 
     def build_eye(self) -> str:
-        eye_color: str = DomUtil.build_str_color((255, 0, 0))
+        eye_color: str = DomUtil.build_str_color(self.eye_color)
         transparent: str = DomUtil.build_str_color((0, 0, 0, 0))
         common_attributes: dict[str, str] = {"cy": "50", "cx": "50", "stroke-width": '.2'}
         eye_center: str = DomUtil.build_element(

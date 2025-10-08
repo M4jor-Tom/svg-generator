@@ -8,3 +8,6 @@ class State(BaseModel):
     space_theta_wings: float
     animate_theta_eye: bool
     theta_eye_butterfly_animation: bool
+    theta_eye_color: tuple[int, int, int]
+    background_color: tuple[int, int, int]
+    lines_color: tuple[int, int, int]

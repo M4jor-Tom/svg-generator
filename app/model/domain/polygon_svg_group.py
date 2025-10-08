@@ -10,6 +10,7 @@ from util import DomUtil
 class PolygonSvgGroup(SvgElement, BaseModel, ABC):
     thickness: float
     initial_rgb: tuple[int, int, int]
+    final_color: tuple[int, int, int]
     progressive_color: bool
 
     @staticmethod
@@ -43,6 +44,6 @@ class PolygonSvgGroup(SvgElement, BaseModel, ABC):
                 "x2": f"{x2}", "y2": f"{y2}",
                 "stroke-width": f"{self.thickness}",
                 "stroke": DomUtil.build_str_color(color)
-            }, self.build_line_content(color, (0, 0, 0))))
+            }, self.build_line_content(color, self.final_color)))
             current_point_index += 1
         return lines_elements

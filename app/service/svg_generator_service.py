@@ -33,15 +33,18 @@ class SvgGeneratorService:
             width=width, height=height, rgb=background_rgb) if background_rgb else None
         circle_pulsar: CirclePulsarSvgElement = CirclePulsarSvgElement(
             radius=circle_radius, pulse_mode=pulse_mode,
-            fill_rgb=(255, 255, 255, 0), stroke_rgb=(0, 0, 127),
+            fill_rgb=(255, 255, 255, 0), stroke_rgb=self.state_service.state.lines_color,
             cx=cx, cy=cy, thickness=thickness
         )
         circular_polygon_svg_group: CircularPolygonSvgGroup = CircularPolygonSvgGroup(
             angles_count=self.state_service.state.polygon_angles, thickness=thickness, initial_rgb=(0, 0, 50),
-            progressive_color=True,
+            progressive_color=True, final_color=self.state_service.state.lines_color,
             pulse_mode=pulse_mode if self.state_service.state.pulse_polygon else None)
         theta_svg_group: ThetaSvgGroup = ThetaSvgGroup(
-            initial_rgb=(0, 0, 0), thickness=thickness, progressive_color=False,
+            thickness=thickness, progressive_color=False,
+            initial_rgb=self.state_service.state.lines_color,
+            final_color=self.state_service.state.lines_color,
+            eye_color=self.state_service.state.theta_eye_color,
             spacing=self.state_service.state.space_theta_wings,
             animate=self.state_service.state.animate_theta_eye,
             butterfly_mode=butterfly_mode if self.state_service.state.theta_eye_butterfly_animation else None)

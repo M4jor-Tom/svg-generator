@@ -13,7 +13,7 @@ class CircularPolygonSvgGroup(PolygonSvgGroup, BaseModel):
     def build_line_color(self, current_point_index: int, total_lines_count: int) -> \
             tuple[float, float, float]:
         if self.pulse_mode is None:
-            return 0, 0, 0
+            return self.final_color
         if not self.progressive_color:
             return self.initial_rgb
         clearest_color_value: int = max(self.initial_rgb)
