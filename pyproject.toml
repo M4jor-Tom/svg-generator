@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 authors = [{ name = "Tom Vautray" }]
 description = "A svg generation service"
 name = "svg_builder"
-version = "0.0.1-pre"
+version = "1.0.0-alpha"
 readme = "README.md"
 requires-python = ">=3.12"
 
@@ -14,7 +14,7 @@ requires-python = ">=3.12"
 authors = ["Tom Vautray"]
 description = "A svg generation service"
 name = "svg_builder"
-version = "0.0.1-pre"
+version = "1.0.0-alpha"
 packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
