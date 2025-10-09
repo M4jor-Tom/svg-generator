@@ -1,4 +1,5 @@
 health_strip: str = "/health"
+event_strip: str = "/event"
 ui_strip: str = "/ui"
 api_strip: str = "/api"
 v1_strip: str = "/v1"
